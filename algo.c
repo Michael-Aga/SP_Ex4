@@ -54,13 +54,13 @@ pdnode dijkstra_node_list(pnode start, int src)
 }
 
 /* This is a "comfy" function to release the list of nodes */
-void free_list(pdnode list)
+void free_list(pdnode pd_node_list)
 {
-    while (list)
+    while (pd_node_list != NULL)
     {
-        pdnode temp = list->next;
-        free(list);
-        list = temp;
+        pdnode temp_list = pd_node_list;
+        pd_node_list = pd_node_list->next;
+        free(temp_list);
     }
 }
 
@@ -108,11 +108,11 @@ int shortsPath_cmd(pnode head, int src, int dest)
     pdnode di_node_list = dijkstra_node_list(head, src);
     pdnode min_di = min_pd(di_node_list);
 
-    while (min_di)
+    while (min_di != NULL)
     {
         pedge min_edges = min_di->node->edges;
 
-        while (min_edges)
+        while (min_edges != NULL)
         {
             pdnode min_di_node = get_pd_node(di_node_list, min_edges->endpoint->node_num);
             int distance = min_di->weight + min_edges->weight;
@@ -161,8 +161,8 @@ int *create_an_array(int size)
 /* Just a helping function to copy an array */
 int *copy_an_array(int *arr)
 {
-    int *copy = (int *)malloc(sizeof(int) * size);
-    if (copy == NULL)
+    int *copy_of_an_array = (int *)malloc(sizeof(int) * size);
+    if (copy_of_an_array == NULL)
     {
         printf("Couldnt allocate memory for copying an array !");
         return NULL;
@@ -170,10 +170,10 @@ int *copy_an_array(int *arr)
 
     for (int i = 0; i < size; i++)
     {
-        copy[i] = arr[i];
+        copy_of_an_array[i] = arr[i];
     }
 
-    return copy;
+    return copy_of_an_array;
 }
 
 /* Basic swap functuion */

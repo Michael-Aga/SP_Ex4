@@ -62,9 +62,9 @@ void insert_node_cmd(pnode *head)
         pedge current_edge = new_node->edges;
         while (current_edge)
         {
-            pedge temp_current_edge = current_edge->next;
+            pedge temp_edge = current_edge->next;
             free(current_edge);
-            current_edge = temp_current_edge;
+            current_edge = temp_edge;
         }
         new_node->edges = NULL;
     }
@@ -149,14 +149,14 @@ void deleteGraph_cmd(pnode *head)
 
         while (current_edge != NULL)
         {
-            pedge temp_current_edge = current_edge->next;
-            free(current_edge);
-            current_edge = temp_current_edge;
+            pedge temp_edge = current_edge;
+            current_edge = current_edge->next;
+            free(temp_edge);
         }
 
-        pnode temp = current_node;
+        pnode temp_node = current_node;
         current_node = current_node->next;
-        free(temp);
+        free(temp_node);
     }
     *head = NULL;
 }
@@ -185,9 +185,9 @@ void delete_node_cmd(pnode *head)
 
         if (current_node->edges != NULL && current_node->edges->endpoint->node_num == node_to_delete)
         {
-            pedge temp_next_edge = current_node->edges->next;
-            free(current_node->edges);
-            current_node->edges = temp_next_edge;
+            pedge temp_next_edge = current_node->edges;
+            current_node->edges = current_node->edges->next;
+            free(temp_next_edge);
 
             current_node = current_node->next;
             continue;
@@ -201,9 +201,9 @@ void delete_node_cmd(pnode *head)
             {
                 if (current_edge->next->endpoint->node_num == node_to_delete)
                 {
-                    pedge temp = current_edge->next->next;
-                    free(current_edge->next);
-                    current_edge->next = temp;
+                    pedge temp_edge = current_edge->next;
+                    current_edge->next = temp_edge->next;
+                    free(temp_edge);
                 }
 
                 else
@@ -218,11 +218,11 @@ void delete_node_cmd(pnode *head)
     if (delete_head != NULL)
     {
         pedge head_edges = (*delete_head)->edges;
-        while (head_edges)
+        while (head_edges != NULL)
         {
-            pedge temp = head_edges->next;
-            free(head_edges);
-            head_edges = temp;
+            pedge temp = head_edges;
+            head_edges = head_edges->next;
+            free(temp);
         }
 
         pnode temp_head = *delete_head;
@@ -237,9 +237,9 @@ void delete_node_cmd(pnode *head)
 
         while (remove_node_edges)
         {
-            pedge temp = remove_node_edges->next;
-            free(remove_node_edges);
-            remove_node_edges = temp;
+            pedge temp = remove_node_edges;
+            remove_node_edges = remove_node_edges->next;
+            free(temp);
         }
 
         prev_node->next = remove_node->next;
