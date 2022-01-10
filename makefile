@@ -2,10 +2,10 @@ CC = gcc
 AR = ar
 FLAGS= -Wall -g
 
-all: complete_graph
+all: graph
 
-complete_graph: main.o graph_libs.so
-	$(CC) $(FLAGS) -o complete_graph main.o graph_libs.so
+graph: main.o graph_libs.so
+	$(CC) $(FLAGS) -o graph main.o graph_libs.so
 
 main.o: main.c graph.h
 	$(CC) $(FLAGS) -c main.c
