@@ -20,4 +20,4 @@ algo.o: algo.c graph.h
 	$(CC) $(FLAGS) -c algo.c
 
 clean:
-	rm -f *.o *.so complete_graph
+	rm -f *.o *.so graph
