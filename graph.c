@@ -8,7 +8,7 @@ void build_graph_cmd(pnode *head)
     deleteGraph_cmd(head);
 
     int node_quantity = 0;
-    char node_id;
+    char node_id = -1;
     scanf("%d", &node_quantity); // get the number of nodes in the graph from the user
 
     for (int i = 0; i < node_quantity; i++)
@@ -22,7 +22,7 @@ void build_graph_cmd(pnode *head)
 pnode get_graph_node(pnode *head, int node_id)
 {
     pnode current_node = *head;
-    while (current_node)
+    while (current_node != NULL)
     {
         if (current_node->node_num == node_id)
         {
@@ -36,7 +36,7 @@ pnode get_graph_node(pnode *head, int node_id)
 /* For the "B" command, we will create a new vertex with the id number that the user will give us and the edges of the node */
 void insert_node_cmd(pnode *head)
 {
-    int node_id;
+    int node_id = -1;
     scanf("%d", &node_id);
     pnode new_node = get_graph_node(head, node_id);
 
@@ -60,7 +60,7 @@ void insert_node_cmd(pnode *head)
     else
     {
         pedge current_edge = new_node->edges;
-        while (current_edge)
+        while (current_edge != NULL)
         {
             pedge temp_edge = current_edge->next;
             free(current_edge);
@@ -118,7 +118,7 @@ void printGraph_cmd(pnode head)
         printf("The graph is NULL check the code !");
     }
 
-    while (current_node)
+    while (current_node != NULL)
     {
         printf("Node %d: ", current_node->node_num);
         pedge current_edge = current_node->edges;
@@ -143,15 +143,15 @@ void deleteGraph_cmd(pnode *head)
         return;
     }
 
-    while (current_node)
+    while (current_node != NULL)
     {
         pedge current_edge = current_node->edges;
 
         while (current_edge != NULL)
         {
-            pedge temp_edge = current_edge;
-            current_edge = current_edge->next;
-            free(temp_edge);
+            pedge temp_edge = current_edge->next;
+            free(current_edge);
+            current_edge = temp_edge;
         }
 
         pnode temp_node = current_node;
@@ -185,9 +185,9 @@ void delete_node_cmd(pnode *head)
 
         if (current_node->edges != NULL && current_node->edges->endpoint->node_num == node_to_delete)
         {
-            pedge temp_next_edge = current_node->edges;
-            current_node->edges = current_node->edges->next;
-            free(temp_next_edge);
+            pedge temp_next_edge = current_node->edges->next;
+            free(current_node->edges);
+            current_node->edges = temp_next_edge;
 
             current_node = current_node->next;
             continue;
@@ -197,13 +197,13 @@ void delete_node_cmd(pnode *head)
 
         if (current_edge != NULL)
         {
-            while (current_edge->next)
+            while (current_edge->next != NULL)
             {
                 if (current_edge->next->endpoint->node_num == node_to_delete)
                 {
-                    pedge temp_edge = current_edge->next;
-                    current_edge->next = temp_edge->next;
-                    free(temp_edge);
+                    pedge temp = current_edge->next->next;
+                    free(current_edge->next);
+                    current_edge->next = temp;
                 }
 
                 else
@@ -218,11 +218,12 @@ void delete_node_cmd(pnode *head)
     if (delete_head != NULL)
     {
         pedge head_edges = (*delete_head)->edges;
+
         while (head_edges != NULL)
         {
-            pedge temp = head_edges;
-            head_edges = head_edges->next;
-            free(temp);
+            pedge temp = head_edges->next;
+            free(head_edges);
+            head_edges = temp;
         }
 
         pnode temp_head = *delete_head;
@@ -235,11 +236,11 @@ void delete_node_cmd(pnode *head)
         pnode remove_node = prev_node->next;
         pedge remove_node_edges = remove_node->edges;
 
-        while (remove_node_edges)
+        while (remove_node_edges != NULL)
         {
-            pedge temp = remove_node_edges;
-            remove_node_edges = remove_node_edges->next;
-            free(temp);
+            pedge temp = remove_node_edges->next;
+            free(remove_node_edges);
+            remove_node_edges = temp;
         }
 
         prev_node->next = remove_node->next;

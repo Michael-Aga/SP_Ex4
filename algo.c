@@ -13,11 +13,60 @@ pnode my_graph;
 typedef struct di_node
 {
     pnode node;
-    struct di_node *prev_node;
-    int weight;
     int in_use;
+    int weight;
+    struct di_node *prev_node;
     struct di_node *next;
 } dnode, *pdnode;
+
+/* This is a "comfy" function to release the list of nodes */
+void free_list(pdnode pd_node_list)
+{
+    while (pd_node_list != NULL)
+    {
+        pdnode temp_list = pd_node_list;
+        pd_node_list = pd_node_list->next;
+        free(temp_list);
+    }
+}
+
+/* This function give us the pd node */
+pdnode get_pd_node(pdnode di_node_list, int node_id)
+{
+    while (di_node_list != NULL)
+    {
+        if (di_node_list->node->node_num == node_id)
+        {
+            return di_node_list;
+        }
+
+        di_node_list = di_node_list->next;
+    }
+
+    return NULL;
+}
+
+/* This function gives us the min pdnode */
+pdnode min_pd(pdnode head)
+{
+    pdnode selected_min_pd = NULL;
+
+    while (head != NULL)
+    {
+        if (!head->in_use && head->weight < INF && (selected_min_pd == NULL || selected_min_pd->weight < head->weight))
+        {
+            selected_min_pd = head;
+        }
+        head = head->next;
+    }
+
+    if (selected_min_pd != NULL)
+    {
+        selected_min_pd->in_use = TRUE;
+    }
+
+    return selected_min_pd;
+}
 
 /* This function bring us back a list of dijkstra nodes */
 pdnode dijkstra_node_list(pnode start, int src)
@@ -53,55 +102,6 @@ pdnode dijkstra_node_list(pnode start, int src)
     return head;
 }
 
-/* This is a "comfy" function to release the list of nodes */
-void free_list(pdnode pd_node_list)
-{
-    while (pd_node_list != NULL)
-    {
-        pdnode temp_list = pd_node_list;
-        pd_node_list = pd_node_list->next;
-        free(temp_list);
-    }
-}
-
-/* This function give us the pd node */
-pdnode get_pd_node(pdnode di_node_list, int node_id)
-{
-    while (di_node_list)
-    {
-        if (di_node_list->node->node_num == node_id)
-        {
-            return di_node_list;
-        }
-
-        di_node_list = di_node_list->next;
-    }
-
-    return NULL;
-}
-
-/* This function gives us the min pdnode */
-pdnode min_pd(pdnode head)
-{
-    pdnode selected_min_pd = NULL;
-
-    while (head != NULL)
-    {
-        if (!head->in_use && head->weight < INF && (selected_min_pd == NULL || selected_min_pd->weight < head->weight))
-        {
-            selected_min_pd = head;
-        }
-        head = head->next;
-    }
-
-    if (selected_min_pd != NULL)
-    {
-        selected_min_pd->in_use = TRUE;
-    }
-
-    return selected_min_pd;
-}
-
 /* This function gives us the shortest path between 2 nodes */
 int shortsPath_cmd(pnode head, int src, int dest)
 {
@@ -129,13 +129,13 @@ int shortsPath_cmd(pnode head, int src, int dest)
     }
 
     int dis = get_pd_node(di_node_list, dest)->weight;
+    free_list(di_node_list);
     if (dis == INF)
     {
         return -1;
     }
     else
     {
-        free_list(di_node_list);
         return dis;
     }
 }
